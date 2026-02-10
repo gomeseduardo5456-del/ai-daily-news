@@ -8,13 +8,104 @@
         :root { --primary: #007AFF; --bg: #F2F2F7; --card: #FFFFFF; --text: #1C1C1E; --sub: #8E8E93; }
         body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 16px; line-height: 1.5; }
         .header { margin-bottom: 25px; }
-        h1 { font-size: 24px; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
         .filter-bar { background: var(--card); padding: 12px; border-radius: 12px; display: flex; align-items: center; gap: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        select { border: 1px solid #DDD; padding: 10px; border-radius: 8px; flex-grow: 1; outline: none; background: #FFF; font-size: 16px; -webkit-appearance: none; }
+        select { border: 1px solid #DDD; padding: 10px; border-radius: 8px; flex-grow: 1; outline: none; background: #FFF; font-size: 16px; }
         .region-tag { display: inline-block; background: var(--primary); color: white; padding: 4px 14px; border-radius: 20px; font-size: 13px; font-weight: bold; margin: 24px 0 12px; }
-        .news-card { background: var(--card); border-radius: 16px; padding: 18px; margin-bottom: 12px; display: block; text-decoration: none; color: inherit; box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: transform 0.1s; }
-        .news-card:active { transform: scale(0.98); background: #FAFAFA; }
+        .news-card { background: var(--card); border-radius: 16px; padding: 18px; margin-bottom: 12px; display: block; text-decoration: none; color: inherit; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
         .news-meta { font-size: 12px; color: var(--primary); font-weight: 600; margin-bottom: 6px; display: block; }
         .news-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; display: block; line-height: 1.4; color: #000; }
         .news-summary { font-size: 14px; color: #444; margin: 0; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.6; }
-        .loading { text-align: center; margin-top:
+        .status-msg { text-align: center; margin-top: 60px; color: var(--sub); font-size: 15px; padding: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>📢 AI 新闻速递</h1>
+    <div class="filter-bar">
+        <span>📅 日期：</span>
+        <select id="datePicker" onchange="displayNews()"><option>同步中...</option></select>
+    </div>
+</div>
+
+<div id="content"><div class="status-msg">⏳ 正在同步 Google Sheets 数据...</div></div>
+
+<script>
+    // 💡 自动使用你截图中的发布链接
+    const PUB_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6C8zKnTexdzjZ3ZkewQbK46bPx82e0OQlsxRXM_jn8fTEc_5zXwR-Xv5aS9uT9gnBvAD-6yLhBgb4/pubhtml';
+    const DATA_URL = PUB_URL.replace('/pubhtml', '/pub?output=csv');
+
+    let allNews = [];
+
+    async function fetchNews() {
+        try {
+            const response = await fetch(DATA_URL);
+            if (!response.ok) throw new Error("无法连接到表格，请检查网络或发布状态");
+            const csvText = await response.text();
+            
+            // 使用正则解析 CSV，完美处理单元格内的逗号和引号
+            const rows = parseCSV(csvText).slice(1); 
+
+            allNews = rows.map(cols => ({
+                date: cols[0], region: cols[1], topic: cols[2], company: cols[3],
+                title: cols[4], summary: cols[5], source: cols[6], link: cols[7]
+            })).filter(n => n.date && n.title);
+
+            if (allNews.length === 0) throw new Error("表格中未发现有效新闻数据");
+
+            const picker = document.getElementById('datePicker');
+            const dates = [...new Set(allNews.map(n => n.date))].sort().reverse();
+            picker.innerHTML = dates.map(d => `<option value="${d}">${d}</option>`).join('');
+            
+            displayNews();
+        } catch (e) {
+            document.getElementById('content').innerHTML = `<div class="status-msg" style="color:red">❌ 出错了：${e.message}</div>`;
+        }
+    }
+
+    // 高级 CSV 解析器
+    function parseCSV(str) {
+        const arr = [];
+        let quote = false;
+        for (let row = col = c = 0; c < str.length; c++) {
+            let cc = str[c], nc = str[c+1];
+            arr[row] = arr[row] || [];
+            arr[row][col] = arr[row][col] || '';
+            if (cc == '"' && quote && nc == '"') { arr[row][col] += cc; ++c; continue; }
+            if (cc == '"') { quote = !quote; continue; }
+            if (cc == ',' && !quote) { ++col; continue; }
+            if (cc == '\r' && nc == '\n' && !quote) { ++row; col = 0; ++c; continue; }
+            if (cc == '\n' && !quote) { ++row; col = 0; continue; }
+            if (cc == '\r' && !quote) { ++row; col = 0; continue; }
+            arr[row][col] += cc;
+        }
+        return arr;
+    }
+
+    function displayNews() {
+        const date = document.getElementById('datePicker').value;
+        const container = document.getElementById('content');
+        const filtered = allNews.filter(n => n.date === date);
+        
+        let html = '';
+        ["海内", "海外"].forEach(reg => {
+            const regNews = filtered.filter(n => n.region === reg);
+            if (regNews.length > 0) {
+                html += `<div class="region-tag">⭕️ ${reg}</div>`;
+                regNews.forEach(n => {
+                    html += `
+                        <a href="${n.link}" class="news-card" target="_blank">
+                            <span class="news-meta">【${n.topic}】 · ${n.company}</span>
+                            <span class="news-title">${n.title}</span>
+                            <p class="news-summary">${n.summary}</p>
+                        </a>`;
+                });
+            }
+        });
+        container.innerHTML = html || '<div class="status-msg">该日期暂无新闻</div>';
+    }
+
+    fetchNews();
+</script>
+</body>
+</html>
