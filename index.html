@@ -88,7 +88,7 @@
         const filtered = allNews.filter(n => n.date === date);
         
         let html = '';
-        ["海内", "海外"].forEach(reg => {
+        ["国内", "海外"].forEach(reg => {
             const regNews = filtered.filter(n => n.region === reg);
             if (regNews.length > 0) {
                 html += `<div class="region-tag">⭕️ ${reg}</div>`;
