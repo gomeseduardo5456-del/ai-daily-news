@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI 重点新闻速递</title>
+    <style>
+        :root {
+            --primary-color: #007AFF;
+            --bg-color: #F2F2F7;
+            --card-bg: #FFFFFF;
+            --text-main: #1C1C1E;
+            --text-sub: #8E8E93;
+        }
+        body {
+            font-family: -apple-system, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 16px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+        .header {
+            margin: 20px 0 30px;
+            padding: 0 8px;
+        }
+        .header h1 {
+            font-size: 26px;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+        .header p {
+            font-size: 14px;
+            color: var(--text-sub);
+            margin: 0;
+        }
+        .section-tag {
+            display: inline-block;
+            background: var(--primary-color);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            margin: 20px 0 12px 8px;
+        }
+        .news-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            display: block;
+            text-decoration: none;
+            color: inherit;
+            -webkit-tap-highlight-color: rgba(0,0,0,0);
+        }
+        .news-card:active {
+            background-color: #E5E5EA;
+        }
+        .category {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 6px;
+            display: block;
+        }
+        .title {
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .summary {
+            font-size: 14px;
+            color: #3A3A3C;
+            margin-bottom: 0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-bottom: 40px;
+            color: var(--text-sub);
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>📢 AI 新闻速递</h1>
+        <p>2026.02.08 - 02.09 | 每日重点解析</p>
+    </div>
+
+    <div class="section-tag">⭕️ 海内</div>
+
+    <a href="https://seed.bytedance.com/zh/blog" class="news-card">
+        <span class="category">【技术突破】</span>
+        <span class="title">字节多模态 AI 模型 Seedance 2.0 上线</span>
+        <p class="summary">支持多素材输入，即梦平台现已开启高质量长视频生成。</p>
+    </a>
+
+    <a href="https://github.com/bytedance/UI-TARS" class="news-card">
+        <span class="category">【技术突破】</span>
+        <span class="title">字节开源纯视觉 GUI Agent UI-TARS</span>
+        <p class="summary">支持自然语言操控桌面，GitHub 收藏已突破 26k。</p>
+    </a>
+
+    <a href="https://www.similarweb.com/zh/top-websites/category/computers-electronics-and-technology/ai-services/" class="news-card">
+        <span class="category">【数据洞察】</span>
+        <span class="title">1月数据：豆包访问量首超 DeepSeek 登顶</span>
+        <p class="summary">国内 AI 助手 Web 端竞争加剧，千问环比增长 25%。</p>
+    </a>
+
+    <div class="section-tag">⭕️ 海外</div>
+
+    <a href="https://www.qbitai.com/2026/02/378068.html" class="news-card">
+        <span class="category">【模型发布】</span>
+        <span class="title">匿名 Pony Alpha 模型外网评测惊艳</span>
+        <p class="summary">编程与推理能力突出，Agent 工作流工具调用准确率极高。</p>
+    </a>
+
+    <a href="https://www.anthropic.com/news" class="news-card">
+        <span class="category">【产品迭代】</span>
+        <span class="title">Claude Opus 4.6 推出 Fast Mode</span>
+        <p class="summary">性能不变速度提升 2.5 倍，但 6 倍涨价引发开发者争议。</p>
+    </a>
+
+    <a href="https://finance.sina.com.cn/tech/roll/2026-02-01/doc-inhkhscn8986986.shtml" class="news-card">
+        <span class="category">【模型升级】</span>
+        <span class="title">Meta 测试自研 AI 方案，融合 OpenClaw</span>
+        <p class="summary">打通 Avacado 与 Manus Agent，实现全自动跨应用任务。</p>
+    </a>
+
+    <div class="footer">
+        © 2026 PrimeScope · AI 前沿资讯
+    </div>
+
+</body>
+</html>
