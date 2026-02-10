@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 新闻速递</title>
+    <style>
+        :root { --primary: #007AFF; --bg: #F2F2F7; --card: #FFFFFF; --text: #1C1C1E; --sub: #8E8E93; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 16px; line-height: 1.5; }
+        .header { margin-bottom: 25px; }
+        .filter-bar { background: var(--card); padding: 12px; border-radius: 12px; display: flex; align-items: center; gap: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        select { border: 1px solid #DDD; padding: 8px; border-radius: 8px; flex-grow: 1; outline: none; background: #FFF; }
+        .region-tag { display: inline-block; background: var(--primary); color: white; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: bold; margin: 20px 0 10px; }
+        .news-card { background: var(--card); border-radius: 16px; padding: 16px; margin-bottom: 12px; display: block; text-decoration: none; color: inherit; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
+        .news-topic { font-size: 12px; color: var(--primary); font-weight: 600; margin-bottom: 4px; display: block; }
+        .news-title { font-size: 17px; font-weight: 700; margin-bottom: 6px; display: block; }
+        .news-summary { font-size: 14px; color: #444; margin: 0; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        .loading { text-align: center; margin-top: 60px; color: var(--sub); }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>📢 AI 新闻速递</h1>
+    <div class="filter-bar">
+        <span>选择日期：</span>
+        <select id="datePicker" onchange="displayNews()"><option>同步中...</option></select>
+    </div>
+</div>
+
+<div id="content"><div class="loading">正在加载数据...</div></div>
+
+<script>
+    // 💡 关键：请把下面引号里的内容换成你截图里那个以 /pubhtml 结尾的链接
+    const FINAL_PUB_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6C8zKnTexdzjZ3ZkewQbK46bPx82e0OQlsxRXM_jn8fTEc_5zXwR-Xv5aS9uT9gnBvAD-6yLhBgb4/pubhtml';
+    
+    // 自动将网页链接转换为数据接口链接
+    const DATA_URL = FINAL_PUB_URL.replace('/pubhtml', '/pub?output=csv');
+
+    let allNews = [];
+
+    async function fetchNews() {
+        try {
+            const response = await fetch(DATA_URL);
+            const csvText = await response.text();
+            
+            // 解析 CSV 逻辑
+            const rows = csvText.split('\n').map(row => {
+                // 处理 CSV 单元格中的逗号问题
+                return row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c => c.replace(/^"|"$/g, '').trim());
+            }).slice(1); 
+
+            allNews = rows.map(cols => ({
+                date: cols[0], region: cols[1], topic: cols[2], company: cols[3],
+                title: cols[4], summary: cols[5], source: cols[6], link: cols[7]
+            })).filter(n => n.date && n.title);
+
+            const picker = document.getElementById('datePicker');
+            const dates = [...new Set(allNews.map(n => n.date))].sort().reverse();
+            picker
